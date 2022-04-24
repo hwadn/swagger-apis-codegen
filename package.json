@@ -2,19 +2,27 @@
   "name": "swagger-apis-processor",
   "version": "1.0.0",
   "description": "A cli tool for generating swagger apis request methods of typescript.",
-  "main": "src/index.js",
+  "main": "./src/index.ts",
   "repository": "git@github.com:IamHuadong/swagger-apis-processor.git",
   "author": "huadong.chen <huadong.chen@shopee.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "ts-node -r tsconfig-paths/register src/tests/index.ts"
+  },
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
   "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1",
+    "@types/swagger-schema-official": "^2.0.22",
     "eslint": "^8.13.0",
+    "eslint-import-resolver-alias": "^1.1.2",
     "tsc": "^2.0.4",
+    "tsconfig-paths": "^3.14.1",
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "got": "^12.0.3"
+    "got": "11.8.2"
   }
 }
