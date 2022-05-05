@@ -1,1 +1,2 @@
-export * from './Processor'
+import 'module-alias/register'
+export * from '@/Processor'
