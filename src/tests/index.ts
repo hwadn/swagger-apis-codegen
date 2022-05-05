@@ -1,3 +1,4 @@
+import 'module-alias/register'
 import { Processor } from '@/Processor'
 
 const fileSrc = 'swagger-json.json'
