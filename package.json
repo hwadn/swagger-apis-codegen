@@ -1,5 +1,5 @@
 {
-  "name": "swagger-apis-processor",
+  "name": "swagger-apis-codegen",
   "version": "1.0.0",
   "description": "A cli tool for generating swagger apis request methods of typescript.",
   "main": "./src/index.ts",
