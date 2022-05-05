@@ -1,5 +1,5 @@
-import { request } from '@/util/request'
-import swagger from 'swagger-schema-official'
+import { request } from '@/utils/request'
+import { OpenAPIV3 } from "openapi-types"
 import { readFile } from 'fs/promises'
 import { resolve } from 'path'
 
@@ -8,7 +8,7 @@ import { resolve } from 'path'
  * @src  Swagger schemas url or file path
  * @returns swagger schema object
  */
-export const readSwaggerSchema = async (src: string): Promise<swagger.Spec> => {
+export const readSwaggerSchema = async (src: string): Promise<OpenAPIV3.Document> => {
   let swaggerSchemaString: string
   if (isUrl(src)) {
     swaggerSchemaString = await request<string>(src)
