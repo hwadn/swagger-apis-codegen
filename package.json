@@ -7,7 +7,7 @@
   "author": "huadong.chen <huadong.chen@shopee.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "test": "ts-node -r tsconfig-paths/register tests/index.ts"
   },
   "engines": {
@@ -20,6 +20,7 @@
     "module-alias": "^2.2.2",
     "openapi-types": "^11.0.0",
     "tsc": "^2.0.4",
+    "tsc-alias": "^1.6.7",
     "tsconfig-paths": "^3.14.1",
     "typescript": "^4.6.3"
   },
