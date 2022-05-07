@@ -8,7 +8,7 @@
     "emitDecoratorMetadata": true,                    /* Emit design-type metadata for decorated declarations in source files. */
 
     /* Modules */
-    "module": "CommonJS",                                /* Specify what module code is generated. */
+    "module": "ESNext",                                /* Specify what module code is generated. */
     "rootDir": "./src",                                  /* Specify the root folder within your source files. */
 
     /* Emit */
@@ -36,6 +36,7 @@
   },
   "include": ["src"],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "*.hbs"
   ]
 }
