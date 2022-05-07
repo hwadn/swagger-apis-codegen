@@ -1,4 +1,3 @@
-import 'module-alias/register'
 import { readSwaggerSchema } from '@/utils/readSwaggerSchema'
 import { writeModels } from '@/utils/writeModels'
 import { writeApis } from '@/utils/writeApis'
@@ -18,7 +17,15 @@ export const generate = async (config: IGenerateConfig) => {
   const { paths, components } = swaggerSchema
   // TODO check version
   writeModels(components?.schemas)
-  writeApis(paths)
+  await writeApis(paths)
 
-  console.log('done!', swaggerSchema)
+  console.log('done!')
 }
+
+// TODO remove
+const urlSrc = 'https://bigcompute.infra.test.shopee.io/node-gateway/api/swagger-json'
+generate({
+  input: urlSrc,
+  type: 'server',
+  output: './test'
+})
