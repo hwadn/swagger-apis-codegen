@@ -1,4 +1,4 @@
-import { resolve, extname, dirname } from 'path'
+import { resolve, extname } from 'path'
 import typescript from '@rollup/plugin-typescript'
 import alias from '@rollup/plugin-alias'
 import { readFileSync } from 'fs'
