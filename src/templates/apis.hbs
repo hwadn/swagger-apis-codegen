@@ -3,12 +3,10 @@ import fetch from 'fetch'
 export interface I{{operationId}}Params {
 
 }
-
 type {{operationId}}Fn = (params: I{{operationId}}Params) => any
-
 export const {{operationId}}: {{operationId}}Fn = async () => {
   const response = await fetch({
-    resource: {{url}},
+    resource: {{path}},
     method: {{method}},
     params: {}
   })

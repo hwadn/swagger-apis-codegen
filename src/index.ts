@@ -13,11 +13,12 @@ interface IGenerateConfig {
 
 export const generate = async (config: IGenerateConfig) => {
   console.log('start!')
-  const swaggerSchema = await readSwaggerSchema(config.input)
-  const { paths, components } = swaggerSchema
+  const { input, output } = config
+  const swaggerSchema = await readSwaggerSchema(input)
+  const { paths: pathSchema, components: componentsSchema } = swaggerSchema
   // TODO check version
-  writeModels(components?.schemas)
-  await writeApis(paths)
+  // writeModels(components?.schemas)
+  await writeApis(pathSchema, output)
 
   console.log('done!')
 }
