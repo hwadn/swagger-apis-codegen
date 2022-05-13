@@ -1,5 +1,5 @@
 import { readSwaggerSchema } from '@/utils/readSwaggerSchema'
-import { writeModels } from '@/utils/writeModels'
+// import { writeModels } from '@/utils/writeModels'
 import { writeApis } from '@/utils/writeApis'
 
 interface IGenerateConfig {
