@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types'
 import { apisRender } from '@/utils/registerHandlebarTemplates'
-import { mkdir, rmdir, open, readdir, unlink } from 'fs/promises'
+import { mkdir, open, readdir, unlink } from 'fs/promises'
 import { existsSync } from 'fs'
 import { resolve, dirname } from 'path'
 
@@ -24,21 +24,20 @@ const formatSwaggerPaths = (swaggerPaths: OpenAPIV3.Document['paths']): IApiInfo
   return apiInfoList
 }
 
-const createApisDirectory = (directoryPath: string) => {
+const createApisDirectory = async (directoryPath: string) => {
+  if (existsSync(directoryPath)) return true
+
   const fatherDirPath = dirname(directoryPath)
-  const fatherDirExist = existsSync(fatherDirPath)
-  if (fatherDirExist) {
-    mkdir(directoryPath)
-  } else {
-    createApisDirectory(fatherDirPath)
-    createApisDirectory(directoryPath)
+  if (await createApisDirectory(fatherDirPath)) {
+    await mkdir(directoryPath)
+    return true
   }
 }
 
 const createEmptyFiles = async (directoryPath: string, fileNames: string[]) => {
   const files = await readdir(directoryPath)
   const existedFiles = files.filter((file) => fileNames.includes(file))
-  await Promise.all(existedFiles.map(file => unlink(file)))
+  await Promise.all(existedFiles.map(fileName => unlink(resolve(directoryPath, fileName))))
   return Promise.all(fileNames.map(fileName => open(resolve(directoryPath, fileName), 'w')))
 }
 
@@ -47,7 +46,7 @@ export const writeApis = async (swaggerPaths: OpenAPIV3.Document['paths'], outpu
   // create empty files in apis directory
   const fileNames = apiInfoList.map(({ tag }) => `${tag}.ts`)
   const apisDirectory = resolve(__dirname, outputDir || './', 'apis')
-  createApisDirectory(apisDirectory)
+  await createApisDirectory(apisDirectory)
   await createEmptyFiles(apisDirectory, fileNames)
   // TODO append
   // fileNames.forEach(() => {

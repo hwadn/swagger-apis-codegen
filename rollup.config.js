@@ -1,6 +1,9 @@
 import { resolve, extname } from 'path'
 import typescript from '@rollup/plugin-typescript'
 import alias from '@rollup/plugin-alias'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import externals from 'rollup-plugin-node-externals'
+
 import { readFileSync } from 'fs'
 import Handlebars from 'handlebars'
 
@@ -29,9 +32,14 @@ module.exports = [
     output: {
       file: resolveFile('./dist/index.js'),
       format: 'cjs',
-    }, 
+    },
     plugins: [
-      typescript(),
+      externals(),
+      nodeResolve(),
+      typescript({
+        exclude: "node_modules/**",
+        typescript: require("typescript")
+      }),
       alias({
         entries: [
           {
@@ -39,7 +47,7 @@ module.exports = [
           }
         ]
       }),
-      handlebarsPlugin()
+      handlebarsPlugin(),
     ],
   },
 ]
