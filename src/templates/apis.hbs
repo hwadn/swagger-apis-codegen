@@ -1,13 +1,16 @@
 import fetch from 'fetch'
 
+{{#each apis}}
 export interface I{{operationId}}Params {
 
 }
 type {{operationId}}Fn = (params: I{{operationId}}Params) => any
-export const {{operationId}}: {{operationId}}Fn = async () => {
+export const {{firstLowCase operationId}}: {{operationId}}Fn = async () => {
   const response = await fetch({
-    resource: {{path}},
-    method: {{method}},
+    resource: '{{path}}',
+    method: '{{method}}',
     params: {}
   })
 }
+
+{{/each}}

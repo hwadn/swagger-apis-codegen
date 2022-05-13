@@ -1,26 +1,25 @@
 import { OpenAPIV3 } from 'openapi-types'
 import { apisRender } from '@/utils/registerHandlebarTemplates'
-import { mkdir, open, readdir, unlink } from 'fs/promises'
+import { mkdir, open, readdir, unlink, appendFile, writeFile } from 'fs/promises'
 import { existsSync } from 'fs'
-import { resolve, dirname } from 'path'
+import { resolve, dirname, basename } from 'path'
+import { IApiInfo, ITagApis } from '@/interfaces/apis'
 
-interface IApiInfo extends OpenAPIV3.PathItemObject {
-  tag: string
-  path: string
-  method: string
-}
 
-const formatSwaggerPaths = (swaggerPaths: OpenAPIV3.Document['paths']): IApiInfo[] => {
-  const apiInfoList: IApiInfo[] = []
+const formatSwaggerPaths = (swaggerPaths: OpenAPIV3.Document['paths']): ITagApis[] => {
+  const tagApisMap: Record<string, IApiInfo[]> = {}
   Object.entries(swaggerPaths).forEach(([path, pathObject]) => {
     pathObject && Object.entries(pathObject).forEach(([method, operationInfo]) => {
       if (operationInfo && typeof operationInfo !== 'string' && 'tags' in operationInfo) {
         const { tags = [], ...others } = operationInfo || {}
         const tag = tags.length > 0 ? tags[0] : 'default'
-        apiInfoList.push({ path, method, tag, ...others })
+        const api = { path, method, ...others }
+        if (!tagApisMap[tag]) tagApisMap[tag] = []
+        tagApisMap[tag].push(api)
       }
     })
   })
+  const apiInfoList: ITagApis[] = Object.entries(tagApisMap).map(([tag, apis]) => ({ tag, apis }))
   return apiInfoList
 }
 
@@ -34,25 +33,18 @@ const createApisDirectory = async (directoryPath: string) => {
   }
 }
 
-const createEmptyFiles = async (directoryPath: string, fileNames: string[]) => {
-  const files = await readdir(directoryPath)
-  const existedFiles = files.filter((file) => fileNames.includes(file))
-  await Promise.all(existedFiles.map(fileName => unlink(resolve(directoryPath, fileName))))
-  return Promise.all(fileNames.map(fileName => open(resolve(directoryPath, fileName), 'w')))
-}
 
 export const writeApis = async (swaggerPaths: OpenAPIV3.Document['paths'], outputDir?: string) => {
-  const apiInfoList = formatSwaggerPaths(swaggerPaths)
+  const tagApis = formatSwaggerPaths(swaggerPaths)
   // create empty files in apis directory
-  const fileNames = apiInfoList.map(({ tag }) => `${tag}.ts`)
   const apisDirectory = resolve(__dirname, outputDir || './', 'apis')
+  // Absolute file path
+  const fileNames = tagApis.map(({ tag }) => resolve(apisDirectory, `${tag}.ts`))
   await createApisDirectory(apisDirectory)
-  await createEmptyFiles(apisDirectory, fileNames)
-  // TODO append
-  // fileNames.forEach(() => {
-
-  // })
-
-  const res = apisRender({ age: 12, name: 'ccchd' })
-  console.log('res:', res)
+  // await writeFile(apisDirectory, fileNames)
+  await Promise.all(tagApis.map(async (tagApis) => {
+    const apisCode = apisRender(tagApis)
+    const filePath = resolve(apisDirectory, `${tagApis.tag}.ts`)
+    await writeFile(filePath, apisCode)
+  }))
 }
