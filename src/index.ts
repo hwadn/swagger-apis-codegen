@@ -1,5 +1,5 @@
 import { readSwaggerSchema } from '@/utils/readSwaggerSchema'
-// import { writeModels } from '@/utils/writeModels'
+import { writeModels } from '@/utils/writeModels'
 import { writeApis } from '@/utils/writeApis'
 
 interface IGenerateConfig {
@@ -17,7 +17,7 @@ export const generate = async (config: IGenerateConfig) => {
   const swaggerSchema = await readSwaggerSchema(input)
   const { paths: pathSchema, components: componentsSchema } = swaggerSchema
   // TODO check version
-  // writeModels(components?.schemas)
+  await writeModels(componentsSchema?.schemas, output)
   await writeApis(pathSchema, output)
 
   console.log('done!')

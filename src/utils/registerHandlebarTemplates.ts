@@ -1,10 +1,12 @@
 import Handlebars from 'handlebars'
 import apisTemplate from '@/templates/apis.hbs'
-import { ITagApis } from '@/interfaces/apis'
+import modelsTemplate from '@/templates/models.hbs'
+import { ITagApis, ISchemas } from '@/interfaces/apis'
 import { OpenAPIV3 } from 'openapi-types/dist/index'
-import { swaggerPathToJs } from '@/utils/transform'
+import { swaggerPathToJs } from '@/utils/format'
 
 export const apisRender = Handlebars.template<ITagApis>(apisTemplate)
+export const modelsRender = Handlebars.template<ISchemas>(modelsTemplate)
 
 // helpers
 Handlebars.registerHelper('firstLowCase', (value: string) => value.replace(/^[A-Z]/, firstCh => firstCh.toLocaleLowerCase()))
