@@ -1,4 +1,4 @@
-import { readSwaggerSchema } from '@/utils/readSwaggerSchema'
+import { readSwagger } from '@/utils/readSwagger'
 import { writeModels } from '@/utils/writeModels'
 import { writeApis } from '@/utils/writeApis'
 
@@ -11,21 +11,21 @@ interface IGenerateConfig {
   output?: string
 }
 
-export const generate = async (config: IGenerateConfig) => {
+export const codeGen = async (config: IGenerateConfig) => {
   console.log('start!')
   const { input, output } = config
-  const swaggerSchema = await readSwaggerSchema(input)
-  const { paths: pathSchema, components: componentsSchema } = swaggerSchema
+  const swaggerObject = await readSwagger(input)
+  const { paths, components } = swaggerObject
   // TODO check version
-  await writeModels(componentsSchema?.schemas, output)
-  await writeApis(pathSchema, output)
+  await writeModels(components?.schemas, output)
+  await writeApis(paths, output)
 
   console.log('done!')
 }
 
 // TODO remove
 const urlSrc = 'https://bigcompute.infra.test.shopee.io/node-gateway/api/swagger-json'
-generate({
+codeGen({
   input: urlSrc,
   type: 'server',
   output: './test'
