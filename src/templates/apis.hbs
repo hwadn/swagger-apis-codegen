@@ -1,13 +1,15 @@
 import fetch from 'fetch'
 
 {{#each apis}}
-export interface I{{operationId}}Params {
-
+export interface I{{operationId}}Args {
+  params: any
+  query: any
+  body: any
 }
-type {{operationId}}Fn = (params: I{{operationId}}Params) => any
-export const {{firstLowCase operationId}}: {{operationId}}Fn = async () => {
+type I{{operationId}}Fn = (args: I{{operationId}}Args) => any
+export const {{firstLowCase operationId}}: I{{operationId}}Fn = async (args) => {
   const response = await fetch({
-    resource: '{{path}}',
+    resource: {{parsePath path parameters}},
     method: '{{method}}',
     params: {}
   })
