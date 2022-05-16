@@ -8,7 +8,7 @@ import { resolve } from 'path'
  * @src  Swagger schemas url or file path
  * @returns swagger schema object
  */
-export const readSwaggerSchema = async (src: string): Promise<OpenAPIV3.Document> => {
+export const readSwagger = async (src: string): Promise<OpenAPIV3.Document> => {
   let swaggerSchemaString: string
   if (isUrl(src)) {
     swaggerSchemaString = await request<string>(src)
