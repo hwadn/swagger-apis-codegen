@@ -1,7 +1,8 @@
 import Handlebars from 'handlebars'
 import apisTemplate from '@/templates/apis.hbs'
 import modelsTemplate from '@/templates/models.hbs'
-import { ITagApis, ISchemas } from '@/interfaces/apis'
+import { ITagApis } from '@/interfaces/apis'
+import { ISchemas } from '@/interfaces/models'
 import { OpenAPIV3 } from 'openapi-types/dist/index'
 import { swaggerPathToJs } from '@/utils/format'
 

@@ -1,6 +1,7 @@
 import Handlebars from 'handlebars'
 import { OpenAPIV3 } from 'openapi-types'
-import { IApiInfo, ITagApis, ISchemas } from '@/interfaces/apis'
+import { IApiInfo, ITagApis } from '@/interfaces/apis'
+import { ISchemas } from '@/interfaces/models'
 
 export const formatSwaggerSchemas = (openApiSchemas: OpenAPIV3.ComponentsObject['schemas']): ISchemas => {
   let schemas: ISchemas['items'] = []
