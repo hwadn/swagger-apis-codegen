@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'fs/promises'
+import { mkdir } from 'fs/promises'
 import { dirname } from 'path'
 import { existsSync } from 'fs'
 

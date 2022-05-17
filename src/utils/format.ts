@@ -1,14 +1,44 @@
 import Handlebars from 'handlebars'
 import { OpenAPIV3 } from 'openapi-types'
-import { IApiInfo, ITagApis, ISchemas } from '@/interfaces/apis'
+import { IApiInfo, ITagApis } from '@/interfaces/apis'
+import { ISchemas } from '@/interfaces/models'
+import { IFormattedTypeDescription } from '@/interfaces/partial'
+
+type OpenAPIV3TypeDescription = OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject
+
+/**
+ * Format recursively
+ * return value likes:
+    {
+      key: 'ListAZsResponse',
+      properties: [
+        { key: 'azs', properties: [], type: 'array', items: [Object] },
+        { key: 'total', properties: [], type: 'number' }
+      ],
+      type: 'object',
+      required: [ 'azs', 'total' ]
+    }
+ */
+const formatSchema = (objectName: string, objectValue: OpenAPIV3TypeDescription): IFormattedTypeDescription => {
+  if ('$ref' in objectValue) {
+    return objectValue
+  } else {
+    const { properties = {}, ...others } = objectValue
+    const propertyList = Object.entries(properties).map(([key, description]) => {
+      const formattedSchema = formatSchema(key, description)
+      return { key, ...formattedSchema }
+    })
+    return { key: objectName, properties: propertyList, ...others }
+  }
+}
 
 export const formatSwaggerSchemas = (openApiSchemas: OpenAPIV3.ComponentsObject['schemas']): ISchemas => {
   let schemas: ISchemas['items'] = []
   if (openApiSchemas) {
-    schemas =  Object.entries(openApiSchemas).map(([name, description]) => ({
-      name,
-      ...description
-    }))
+    schemas =  Object.entries(openApiSchemas).map(([schemaName, description]) => {
+      const formattedSchema = formatSchema(schemaName, description)
+      return formattedSchema
+    })
   }
   return { items: schemas }
 }
