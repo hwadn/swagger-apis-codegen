@@ -1,10 +1,6 @@
 {{#each items}}
-export interface I{{name}} {
-  params: {
-    a: sss
-    b: xxx
-  }
-  ddd: sss
+export interface I{{key}} {
+  {{> typeValues}}
 }
 
 {{/each}}
