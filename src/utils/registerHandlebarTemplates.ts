@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars'
 import apisTemplate from '@/templates/apis.hbs'
 import modelsTemplate from '@/templates/models.hbs'
-import properties from '@/templates/partials/properties.hbs'
+import propertiesTemplate from '@/templates/partials/properties.hbs'
 import { ITagApis } from '@/interfaces/apis'
 import { ISchemas } from '@/interfaces/models'
 import { IFormattedTypeDescription } from '@/interfaces/partial'
@@ -11,6 +11,9 @@ import { swaggerPathToJs } from '@/utils/format'
 export const apisRender = Handlebars.template<ITagApis>(apisTemplate)
 export const modelsRender = Handlebars.template<ISchemas>(modelsTemplate)
 
+// partials
+Handlebars.registerPartial('typeValues', Handlebars.template<IFormattedTypeDescription>(propertiesTemplate))
+
 // helpers
 Handlebars.registerHelper('firstLowCase', (value: string) => value.replace(/^[A-Z]/, firstCh => firstCh.toLocaleLowerCase()))
 Handlebars.registerHelper('parsePath', (path: string, parameters: OpenAPIV3.PathItemObject['parameters']) => {
@@ -18,5 +21,31 @@ Handlebars.registerHelper('parsePath', (path: string, parameters: OpenAPIV3.Path
   return swaggerPathToJs(path, !!pathParameters && pathParameters?.length > 0)
 })
 
-// partials
-Handlebars.registerPartial('typeValues', Handlebars.template<IFormattedTypeDescription>(properties))
+const parseRefs = (res: string) => {
+  const refPaths = res.split('/')
+  return `I${refPaths[refPaths.length - 1]}`
+}
+
+Handlebars.registerHelper('parseProperties', function(this: IFormattedTypeDescription) {
+  if ('$ref' in this && this['$ref'].length > 0) {
+    return parseRefs(this['$ref'])
+  }
+
+  if ('oneOf' in this) {
+    const refs = this.oneOf?.map(refObj => ('$ref' in refObj && parseRefs(refObj['$ref'])))
+    return refs?.join(' | ')
+  }
+
+  if ('type' in this) {
+    switch (this.type) {
+      case 'integer':
+        return 'number'
+      case 'array': // TODO any array
+        return 'any[]'
+      case 'object': // TODO split
+        return '{' + Handlebars.compile('{{> typeValues}}')(this) + '}'
+      default:
+        return this.type
+    }
+  }
+})
