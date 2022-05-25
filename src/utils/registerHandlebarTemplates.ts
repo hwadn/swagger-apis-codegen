@@ -31,18 +31,22 @@ Handlebars.registerHelper('parseProperties', function(this: IFormattedTypeDescri
     return parseRefs(this['$ref'])
   }
 
+  // TODO allOf, anyOf
   if ('oneOf' in this) {
     const refs = this.oneOf?.map(refObj => ('$ref' in refObj && parseRefs(refObj['$ref'])))
     return refs?.join(' | ')
   }
-
   if ('type' in this) {
     switch (this.type) {
       case 'integer':
         return 'number'
-      case 'array': // TODO any array
-        return 'any[]'
-      case 'object': // TODO split
+      case 'array': // TODO fix
+        const items = this.items
+        if ('$ref' in items && items['$ref'].length > 0) {
+          return parseRefs(items['$ref']) + '[]'
+        }
+        return '{' + Handlebars.compile('{{> typeValues}}')(items) + '}[]'
+      case 'object': // TODO fix
         return '{' + Handlebars.compile('{{> typeValues}}')(this) + '}'
       default:
         return this.type
