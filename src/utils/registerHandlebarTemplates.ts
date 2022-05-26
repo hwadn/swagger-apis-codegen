@@ -45,7 +45,7 @@ Handlebars.registerHelper('parseProperties', function(this: IFormattedTypeDescri
         if ('$ref' in items && items['$ref'].length > 0) {
           return parseRefs(items['$ref']) + '[]'
         }
-        return '{' + Handlebars.compile('{{> typeValues}}')(items) + '}[]'
+        return Handlebars.compile('{{parseProperties}}')(items) + '[]'
       case 'object': // TODO fix
         return '{' + Handlebars.compile('{{> typeValues}}')(this) + '}'
       default:
