@@ -5,7 +5,10 @@ import { resolve } from 'path'
 import { formatSwaggerSchemas } from '@/utils/format'
 import { createDirectory } from '@/utils/file'
 
-export const writeModels = async (swaggerSchemas: OpenAPIV3.ComponentsObject['schemas'], outputDir?: string) => {
+export const writeModels = async (
+  swaggerSchemas: OpenAPIV3.ComponentsObject['schemas'],
+  outputDir?: string
+) => {
   const modelsDirectory = resolve(__dirname, outputDir || './')
   // Absolute file path
   await createDirectory(modelsDirectory)

@@ -8,7 +8,8 @@
   "license": "MIT",
   "scripts": {
     "build": "rollup -c rollup.config.js",
-    "test": "yarn build && node ./dist/index.js"
+    "test": "yarn build && node ./dist/index.js && yarn eslint --fix ./dist/test",
+    "fix": "yarn eslint --fix ./src"
   },
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
@@ -18,9 +19,13 @@
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-typescript": "^8.3.2",
     "@tsconfig/recommended": "^1.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.26.0",
+    "@typescript-eslint/parser": "^5.26.0",
     "eslint": "^8.13.0",
     "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-prettier": "^4.0.0",
     "openapi-types": "^11.0.0",
+    "prettier": "^2.6.2",
     "rollup": "^2.72.0",
     "rollup-plugin-node-externals": "^4.0.0",
     "tsc": "^2.0.4",

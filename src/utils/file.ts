@@ -11,4 +11,3 @@ export const createDirectory = async (directoryPath: string) => {
     return true
   }
 }
-
