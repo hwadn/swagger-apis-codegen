@@ -28,5 +28,5 @@ const urlSrc = 'https://kube-test.devops.test.sz.shopee.io/api/v1/api-json'
 codeGen({
   input: urlSrc,
   type: 'server',
-  output: './test'
+  output: './test',
 })

@@ -5,6 +5,12 @@ interface IFormattedSchemaObjectExtends {
   properties: IFormattedTypeDescription[]
 }
 
-type  IFormattedSchemaObject = (IFormattedSchemaObjectExtends & Omit<OpenAPIV3.ArraySchemaObject, 'properties'>) | (IFormattedSchemaObjectExtends & Omit<OpenAPIV3.NonArraySchemaObject, 'properties'>) 
+type IFormattedSchemaObject =
+  | (IFormattedSchemaObjectExtends &
+      Omit<OpenAPIV3.ArraySchemaObject, 'properties'>)
+  | (IFormattedSchemaObjectExtends &
+      Omit<OpenAPIV3.NonArraySchemaObject, 'properties'>)
 
-export type IFormattedTypeDescription = IFormattedSchemaObject | OpenAPIV3.ReferenceObject
+export type IFormattedTypeDescription =
+  | IFormattedSchemaObject
+  | OpenAPIV3.ReferenceObject

@@ -1,5 +1,5 @@
 import { request } from '@/utils/request'
-import { OpenAPIV3 } from "openapi-types"
+import { OpenAPIV3 } from 'openapi-types'
 import { readFile } from 'fs/promises'
 import { resolve } from 'path'
 
@@ -21,6 +21,7 @@ export const readSwagger = async (src: string): Promise<OpenAPIV3.Document> => {
 }
 
 const isUrl = (value: string): boolean => {
-  const urlPattern = /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/
+  const urlPattern =
+    /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-/]))?/
   return urlPattern.test(value)
 }
