@@ -5,7 +5,7 @@ export interface IApiInfo extends OpenAPIV3.PathItemObject {
   method: string
 }
 
-export interface ITagApis {
-  tag: string
+export class ITagApis {
+  tag: string | number
   apis: IApiInfo[]
 }
