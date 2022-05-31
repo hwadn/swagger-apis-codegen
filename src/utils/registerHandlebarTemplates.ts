@@ -2,11 +2,14 @@ import Handlebars from 'handlebars'
 import apisTemplate from '@/templates/apis.hbs'
 import modelsTemplate from '@/templates/models.hbs'
 import propertiesTemplate from '@/templates/partials/properties.hbs'
-import { ITagApis } from '@/interfaces/apis'
+import apiArgsTemplate from '@/templates/partials/apiArgs.hbs'
+import { ITagApis, IApiInfo } from '@/interfaces/apis'
 import { ISchemas } from '@/interfaces/models'
 import { IFormattedTypeDescription } from '@/interfaces/partial'
+
 import { OpenAPIV3 } from 'openapi-types/dist/index'
 import { swaggerPathToJs } from '@/utils/format'
+import { parseRefs } from '@/utils/parse'
 
 export const apisRender = Handlebars.template<ITagApis>(apisTemplate)
 export const modelsRender = Handlebars.template<ISchemas>(modelsTemplate)
@@ -16,8 +19,13 @@ Handlebars.registerPartial(
   'typeValues',
   Handlebars.template<IFormattedTypeDescription>(propertiesTemplate)
 )
+Handlebars.registerPartial(
+  'apiArgs',
+  Handlebars.template<IFormattedTypeDescription>(apiArgsTemplate)
+)
 
 // helpers
+// apis
 Handlebars.registerHelper('firstLowCase', (value: string) =>
   value.replace(/^[A-Z]/, (firstCh) => firstCh.toLocaleLowerCase())
 )
@@ -30,12 +38,23 @@ Handlebars.registerHelper(
     return swaggerPathToJs(path, !!pathParameters && pathParameters?.length > 0)
   }
 )
-
-const parseRefs = (res: string) => {
-  const refPaths = res.split('/')
-  return `I${refPaths[refPaths.length - 1]}`
-}
-
+Handlebars.registerHelper('parseArgs', function (this: IApiInfo) {
+  const { parameters, requestBody } = this
+  const pathParams = parameters?.filter(
+    (param) => 'in' in param && param.in === 'path'
+  )
+  const paramsString = Handlebars.compile('{{> apiArgs}}')({ pathParams })
+  if (requestBody && 'content' in requestBody) {
+    const mediaSchema = requestBody.content['application/json'].schema
+    if (mediaSchema && '$ref' in mediaSchema) {
+      const ref = mediaSchema['$ref']
+      const refType = parseRefs(ref)
+      return paramsString + ';' + `body: types.${refType}`
+    }
+  }
+  return paramsString
+})
+// models
 Handlebars.registerHelper(
   'parseProperties',
   function (this: IFormattedTypeDescription) {
