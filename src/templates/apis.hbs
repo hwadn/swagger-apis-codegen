@@ -1,18 +1,18 @@
 import fetch from 'fetch'
+import * as types from '../models'
 
 {{#each apis}}
-export interface I{{operationId}}Args {
-  params: any
-  query: any
-  body: any
+interface I{{operationId}}Args {
+  {{parseArgs}}
 }
-type I{{operationId}}Fn = (args: I{{operationId}}Args) => any
+type I{{operationId}}Fn = (args: I{{operationId}}Args) => any 
 export const {{firstLowCase operationId}}: I{{operationId}}Fn = async (args) => {
   const response = await fetch({
     resource: {{parsePath path parameters}},
     method: '{{method}}',
     params: {}
   })
+  return response.body
 }
 
 {{/each}}
