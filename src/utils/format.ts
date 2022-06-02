@@ -66,9 +66,49 @@ export const formatSwaggerPaths = (
           typeof operationInfo !== 'string' &&
           'tags' in operationInfo
         ) {
-          const { tags = [], ...others } = operationInfo || {}
+          const {
+            tags = [],
+            parameters,
+            requestBody,
+            responses,
+            ...others
+          } = operationInfo || {}
+          const params = parameters?.filter(
+            (param) => 'in' in param && param.in === 'path'
+          )
+          const hasParams = !!params && params.length > 0
+          let hasBody = false
+          if (requestBody && 'content' in requestBody) {
+            const mediaSchema = requestBody.content['application/json'].schema
+            if (mediaSchema && '$ref' in mediaSchema) {
+              hasBody = true
+            }
+          }
+          let hasResponse = false
+          Object.values(responses).forEach((item) => {
+            if ('content' in item) {
+              const media = item.content
+              if (media && 'application/json' in media) {
+                const mediaSchema = media.schema
+                if (mediaSchema && '$ref' in mediaSchema) {
+                  hasResponse = true
+                }
+              }
+            }
+          })
           const tag = tags.length > 0 ? tags[0] : 'default'
-          const api = { path, method, ...others }
+          const api: IApiInfo = {
+            path,
+            method,
+            hasParams,
+            hasBody,
+            hasArgs: hasParams || hasBody,
+            hasResponse,
+            parameters,
+            requestBody,
+            responses,
+            ...others,
+          }
           if (!tagApisMap[tag]) tagApisMap[tag] = []
           tagApisMap[tag].push(api)
         }

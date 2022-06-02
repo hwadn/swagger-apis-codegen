@@ -17,12 +17,9 @@ export const modelsRender = Handlebars.template<ISchemas>(modelsTemplate)
 // partials
 Handlebars.registerPartial(
   'typeValues',
-  Handlebars.template<IFormattedTypeDescription>(propertiesTemplate)
+  Handlebars.template(propertiesTemplate)
 )
-Handlebars.registerPartial(
-  'apiArgs',
-  Handlebars.template<IFormattedTypeDescription>(apiArgsTemplate)
-)
+Handlebars.registerPartial('apiArgs', Handlebars.template(apiArgsTemplate))
 
 // helpers
 // apis
@@ -54,6 +51,24 @@ Handlebars.registerHelper('parseArgs', function (this: IApiInfo) {
   }
   return paramsString
 })
+Handlebars.registerHelper('parseResponse', function (this: IApiInfo) {
+  const { responses } = this
+  const responseInfo = Object.values(responses)[0]
+  if ('content' in responseInfo) {
+    const media = responseInfo.content
+    if (media && 'application/json' in media) {
+      const mediaSchema = media['application/json'].schema
+      if (mediaSchema && '$ref' in mediaSchema) {
+        const ref = mediaSchema['$ref']
+        const refType = parseRefs(ref)
+        return `types.${refType}`
+      }
+    }
+  }
+
+  return 'void'
+})
+
 // models
 Handlebars.registerHelper(
   'parseProperties',
