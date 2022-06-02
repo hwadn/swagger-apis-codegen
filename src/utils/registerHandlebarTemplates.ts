@@ -2,11 +2,15 @@ import Handlebars from 'handlebars'
 import apisTemplate from '@/templates/apis.hbs'
 import modelsTemplate from '@/templates/models.hbs'
 import propertiesTemplate from '@/templates/partials/properties.hbs'
-import { ITagApis } from '@/interfaces/apis'
+import apiArgsTemplate from '@/templates/partials/apiArgs.hbs'
+
+import { ITagApis, IApiInfo } from '@/interfaces/apis'
 import { ISchemas } from '@/interfaces/models'
 import { IFormattedTypeDescription } from '@/interfaces/partial'
+
 import { OpenAPIV3 } from 'openapi-types/dist/index'
 import { swaggerPathToJs } from '@/utils/format'
+import { parseRefs } from '@/utils/parse'
 
 export const apisRender = Handlebars.template<ITagApis>(apisTemplate)
 export const modelsRender = Handlebars.template<ISchemas>(modelsTemplate)
@@ -14,10 +18,12 @@ export const modelsRender = Handlebars.template<ISchemas>(modelsTemplate)
 // partials
 Handlebars.registerPartial(
   'typeValues',
-  Handlebars.template<IFormattedTypeDescription>(propertiesTemplate)
+  Handlebars.template(propertiesTemplate)
 )
+Handlebars.registerPartial('apiArgs', Handlebars.template(apiArgsTemplate))
 
 // helpers
+// apis
 Handlebars.registerHelper('firstLowCase', (value: string) =>
   value.replace(/^[A-Z]/, (firstCh) => firstCh.toLocaleLowerCase())
 )
@@ -30,12 +36,41 @@ Handlebars.registerHelper(
     return swaggerPathToJs(path, !!pathParameters && pathParameters?.length > 0)
   }
 )
+Handlebars.registerHelper('parseArgs', function (this: IApiInfo) {
+  const { parameters, requestBody } = this
+  const pathParams = parameters?.filter(
+    (param) => 'in' in param && param.in === 'path'
+  )
+  const paramsString = Handlebars.compile('{{> apiArgs}}')({ pathParams })
+  if (requestBody && 'content' in requestBody) {
+    const mediaSchema = requestBody.content['application/json'].schema
+    if (mediaSchema && '$ref' in mediaSchema) {
+      const ref = mediaSchema['$ref']
+      const refType = parseRefs(ref)
+      return paramsString + ';' + `body: types.${refType}`
+    }
+  }
+  return paramsString
+})
+Handlebars.registerHelper('parseResponse', function (this: IApiInfo) {
+  const { responses } = this
+  const responseInfo = Object.values(responses)[0]
+  if ('content' in responseInfo) {
+    const media = responseInfo.content
+    if (media && 'application/json' in media) {
+      const mediaSchema = media['application/json'].schema
+      if (mediaSchema && '$ref' in mediaSchema) {
+        const ref = mediaSchema['$ref']
+        const refType = parseRefs(ref)
+        return `types.${refType}`
+      }
+    }
+  }
 
-const parseRefs = (res: string) => {
-  const refPaths = res.split('/')
-  return `I${refPaths[refPaths.length - 1]}`
-}
+  return 'void'
+})
 
+// models
 Handlebars.registerHelper(
   'parseProperties',
   function (this: IFormattedTypeDescription) {
