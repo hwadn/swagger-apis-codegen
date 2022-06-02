@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "A cli tool for generating swagger apis request methods of typescript.",
   "main": "./src/index.ts",
-  "repository": "git@github.com:IamHuadong/swagger-apis-processor.git",
-  "author": "huadong.chen <huadong.chen@shopee.com>",
+  "repository": "git@github.com:IamHuadong/swagger-apis-codegen.git",
+  "author": "huadong.chen",
   "license": "MIT",
   "scripts": {
     "build": "rollup -c rollup.config.js",
