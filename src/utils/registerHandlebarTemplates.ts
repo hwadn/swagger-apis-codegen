@@ -9,7 +9,7 @@ import { IFormattedTypeDescription } from '@/interfaces/partial'
 
 import { OpenAPIV3 } from 'openapi-types/dist/index'
 import { swaggerPathToJs } from '@/utils/format'
-import { parseRefs } from '@/utils/parse'
+import { parseRefs, extractParameters } from '@/utils/parse'
 
 export const apisRender = Handlebars.template<ITagApis>(apisTemplate)
 export const modelsRender = Handlebars.template<ISchemas>(modelsTemplate)
@@ -29,24 +29,24 @@ Handlebars.registerHelper('firstLowCase', (value: string) =>
 Handlebars.registerHelper(
   'parsePath',
   (path: string, parameters: OpenAPIV3.PathItemObject['parameters']) => {
-    const pathParameters = parameters?.filter(
-      (parameter) => 'in' in parameter && parameter.in === 'path'
-    )
+    const pathParameters = extractParameters(parameters)
     return swaggerPathToJs(path, !!pathParameters && pathParameters?.length > 0)
   }
 )
 Handlebars.registerHelper('parseArgs', function (this: IApiInfo) {
-  const { parameters, requestBody } = this
-  const pathParams = parameters?.filter(
-    (param) => 'in' in param && param.in === 'path'
-  )
+  const { parameters, requestBody, hasParams } = this
+  const pathParams = extractParameters(parameters)
   const paramsString = Handlebars.compile('{{> apiArgs}}')({ pathParams })
   if (requestBody && 'content' in requestBody) {
     const mediaSchema = requestBody.content['application/json'].schema
     if (mediaSchema && '$ref' in mediaSchema) {
       const ref = mediaSchema['$ref']
       const refType = parseRefs(ref)
-      return paramsString + ';' + `body: types.${refType}`
+      if (hasParams) {
+        return paramsString + ';' + `body: types.${refType}`
+      } else {
+        return `body: types.${refType}`
+      }
     }
   }
   return paramsString
@@ -67,6 +67,28 @@ Handlebars.registerHelper('parseResponse', function (this: IApiInfo) {
   }
 
   return 'void'
+})
+
+Handlebars.registerHelper('parseParams', function (this: IApiInfo) {
+  const { parameters, hasParams, hasBody } = this
+  const pathParams = extractParameters(parameters)
+  let paramKeys
+  if (pathParams) {
+    paramKeys = pathParams.map((item) => 'name' in item && item.name).join(',')
+  }
+  if (hasParams) {
+    if (hasBody) {
+      return `${paramKeys}, body`
+    } else {
+      return paramKeys
+    }
+  } else {
+    if (hasBody) {
+      return 'body'
+    } else {
+      return ''
+    }
+  }
 })
 
 // models
