@@ -3,7 +3,6 @@ import apisTemplate from '@/templates/apis.hbs'
 import modelsTemplate from '@/templates/models.hbs'
 import propertiesTemplate from '@/templates/partials/properties.hbs'
 import apiArgsTemplate from '@/templates/partials/apiArgs.hbs'
-
 import { ITagApis, IApiInfo } from '@/interfaces/apis'
 import { ISchemas } from '@/interfaces/models'
 import { IFormattedTypeDescription } from '@/interfaces/partial'
