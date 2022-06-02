@@ -24,6 +24,7 @@
     "eslint": "^8.13.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-prettier": "^4.0.0",
+    "node-fetch": "^3.2.5",
     "openapi-types": "^11.0.0",
     "prettier": "^2.6.2",
     "rollup": "^2.72.0",

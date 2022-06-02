@@ -1,4 +1,4 @@
-import fetch from 'fetch'
+import fetch from 'node-fetch'
 import * as types from '../models'
 
 {{#each apis}}
@@ -11,12 +11,14 @@ interface I{{operationId}}Args {
 type I{{operationId}}Fn = ({{#if hasArgs}} args: I{{operationId}}Args {{/if}}) => Promise<{{parseResponse}}>
 
 export const {{firstLowCase operationId}}: I{{operationId}}Fn = async ({{#if hasArgs}} args{{/if}}) => {
-  const response = await fetch({
-    resource: {{parsePath path parameters}},
+  {{#if hasArgs}}
+    const { {{parseParams}} } = args
+  {{/if}}
+  const response = await fetch({{parsePath path parameters}}, {
     method: '{{method}}',
-    params: {}
+    {{#if hasBody}}body: JSON.stringify(body){{/if}}
   })
-  return response.body
+  return response.json() as Promise<{{parseResponse}}>
 }
 
 {{/each}}
