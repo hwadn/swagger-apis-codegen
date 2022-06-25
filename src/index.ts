@@ -22,3 +22,9 @@ export const codeGen = async (config: IGenerateConfig) => {
 
   console.log('done!')
 }
+
+codeGen({
+  input: './src/swagger.json',
+  type: 'browser',
+  output: 'test',
+})
