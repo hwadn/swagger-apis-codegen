@@ -1,5 +1,4 @@
 node_modules
 dist
-swagger-json.json
 *.log
 test.json
