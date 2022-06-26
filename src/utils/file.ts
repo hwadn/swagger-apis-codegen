@@ -1,5 +1,5 @@
-import { mkdir } from 'fs/promises'
-import { dirname } from 'path'
+import { mkdir, rm } from 'fs/promises'
+import { dirname, resolve } from 'path'
 import { existsSync } from 'fs'
 
 export const createDirectory = async (directoryPath: string) => {
@@ -10,4 +10,9 @@ export const createDirectory = async (directoryPath: string) => {
     await mkdir(directoryPath)
     return true
   }
+}
+
+export const deleteDirectory = async (outputDir?: string) => {
+  const dir = resolve(__dirname, outputDir || './')
+  await rm(dir, { recursive: true, force: true })
 }
